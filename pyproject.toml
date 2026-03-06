@@ -1,0 +1,90 @@
+[project]
+name = "smartcardfyi"
+version = "0.1.0"
+description = "Smart card encyclopedia API client — look up EMV, Java Card, MULTOS, SIM, JCOP chip platforms, ISO 7816 standards, and specifications from SmartCardFYI."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "FYIPedia" }]
+keywords = [
+    "smart-card",
+    "emv",
+    "chip-card",
+    "sim-card",
+    "jcop",
+    "java-card",
+    "iso-7816",
+    "multos",
+    "globalplatform",
+    "api-client",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+    "Environment :: Console",
+]
+dependencies = []
+
+[project.optional-dependencies]
+api = ["httpx>=0.27"]
+cli = ["typer>=0.15", "rich>=13.0"]
+mcp = ["mcp>=1.0"]
+all = ["smartcardfyi[api,cli,mcp]"]
+
+[project.scripts]
+smartcardfyi = "smartcardfyi.cli:app"
+
+[project.entry-points."mcp.servers"]
+smartcardfyi = "smartcardfyi.mcp_server:mcp"
+
+[project.urls]
+Homepage = "https://smartcardfyi.com"
+"Card Type Explorer" = "https://smartcardfyi.com/card/"
+"Standards Reference" = "https://smartcardfyi.com/standard/"
+Documentation = "https://smartcardfyi.com/developers/"
+Repository = "https://github.com/fyipedia/smartcardfyi"
+Issues = "https://github.com/fyipedia/smartcardfyi/issues"
+Changelog = "https://github.com/fyipedia/smartcardfyi/releases"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/smartcardfyi"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF022"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27",
+    "mcp>=1.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "rich>=13.0",
+    "ruff>=0.15.4",
+    "typer>=0.15",
+]
