@@ -1,6 +1,6 @@
 # smartcardfyi
 
-[![PyPI](https://img.shields.io/pypi/v/smartcardfyi)](https://pypi.org/project/smartcardfyi/)
+[![PyPI version](https://agentgif.com/badge/pypi/smartcardfyi/version.svg)](https://pypi.org/project/smartcardfyi/)
 [![Python](https://img.shields.io/pypi/pyversions/smartcardfyi)](https://pypi.org/project/smartcardfyi/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
