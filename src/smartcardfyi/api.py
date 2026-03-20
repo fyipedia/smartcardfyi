@@ -7,9 +7,9 @@ Usage::
     from smartcardfyi.api import SmartCardFYI
 
     with SmartCardFYI() as api:
-        results = api.search("emv")
-        card = api.card("emv-contact")
-        comparison = api.compare("java-card", "multos")
+        items = api.list_applications()
+        detail = api.get_application("example-slug")
+        results = api.search("query")
 """
 
 from __future__ import annotations
@@ -22,9 +22,8 @@ import httpx
 class SmartCardFYI:
     """API client for the smartcardfyi.com REST API.
 
-    Provides access to 12 endpoints covering smart card types, chip platforms,
-    standards, manufacturers, applications, form factors, certifications,
-    glossary terms, search, comparison, and random discovery.
+    Provides typed access to all smartcardfyi.com endpoints including
+    list, detail, and search operations.
 
     Args:
         base_url: API base URL. Defaults to ``https://smartcardfyi.com``.
@@ -38,109 +37,129 @@ class SmartCardFYI:
     ) -> None:
         self._client = httpx.Client(base_url=base_url, timeout=timeout)
 
-    # -- HTTP helpers ----------------------------------------------------------
-
     def _get(self, path: str, **params: Any) -> dict[str, Any]:
-        resp = self._client.get(path, params={k: v for k, v in params.items() if v is not None})
+        resp = self._client.get(
+            path,
+            params={k: v for k, v in params.items() if v is not None},
+        )
         resp.raise_for_status()
         result: dict[str, Any] = resp.json()
         return result
 
-    # -- Endpoints -------------------------------------------------------------
+    # -- Endpoints -----------------------------------------------------------
 
-    def card(self, slug: str) -> dict[str, Any]:
-        """Get smart card type detail with specs, standards, and applications.
+    def list_applications(self, **params: Any) -> dict[str, Any]:
+        """List all applications."""
+        return self._get("/api/v1/applications/", **params)
 
-        Args:
-            slug: Card type URL slug (e.g. ``"emv-contact"``, ``"sim-card"``, ``"piv-card"``).
-        """
-        return self._get(f"/api/card/{slug}/")
+    def get_application(self, slug: str) -> dict[str, Any]:
+        """Get application by slug."""
+        return self._get(f"/api/v1/applications/" + slug + "/")
 
-    def platform(self, slug: str) -> dict[str, Any]:
-        """Get chip platform detail with supported card types and features.
+    def list_card_types(self, **params: Any) -> dict[str, Any]:
+        """List all card types."""
+        return self._get("/api/v1/card-types/", **params)
 
-        Args:
-            slug: Platform URL slug (e.g. ``"java-card"``, ``"multos"``, ``"basiccard"``).
-        """
-        return self._get(f"/api/platform/{slug}/")
+    def get_card_type(self, slug: str) -> dict[str, Any]:
+        """Get card type by slug."""
+        return self._get(f"/api/v1/card-types/" + slug + "/")
 
-    def standard(self, slug: str) -> dict[str, Any]:
-        """Get smart card standard detail with linked card types.
+    def list_categories(self, **params: Any) -> dict[str, Any]:
+        """List all categories."""
+        return self._get("/api/v1/categories/", **params)
 
-        Args:
-            slug: Standard URL slug (e.g. ``"iso-7816"``, ``"emv-4-3"``, ``"globalplatform-2-3"``).
-        """
-        return self._get(f"/api/standard/{slug}/")
+    def get_category(self, slug: str) -> dict[str, Any]:
+        """Get category by slug."""
+        return self._get(f"/api/v1/categories/" + slug + "/")
 
-    def manufacturer(self, slug: str) -> dict[str, Any]:
-        """Get manufacturer detail with product lines and chip platforms.
+    def list_certifications(self, **params: Any) -> dict[str, Any]:
+        """List all certifications."""
+        return self._get("/api/v1/certifications/", **params)
 
-        Args:
-            slug: Manufacturer URL slug (e.g. ``"nxp"``, ``"infineon"``, ``"idemia"``).
-        """
-        return self._get(f"/api/manufacturer/{slug}/")
+    def get_certification(self, slug: str) -> dict[str, Any]:
+        """Get certification by slug."""
+        return self._get(f"/api/v1/certifications/" + slug + "/")
 
-    def application(self, slug: str) -> dict[str, Any]:
-        """Get application detail with associated card types and standards.
+    def list_faqs(self, **params: Any) -> dict[str, Any]:
+        """List all faqs."""
+        return self._get("/api/v1/faqs/", **params)
 
-        Args:
-            slug: Application URL slug (e.g. ``"payment"``, ``"identity"``, ``"transit"``).
-        """
-        return self._get(f"/api/application/{slug}/")
+    def get_faq(self, slug: str) -> dict[str, Any]:
+        """Get faq by slug."""
+        return self._get(f"/api/v1/faqs/" + slug + "/")
 
-    def form_factor(self, slug: str) -> dict[str, Any]:
-        """Get form factor detail with dimensions and associated card types.
+    def list_form_factors(self, **params: Any) -> dict[str, Any]:
+        """List all form factors."""
+        return self._get("/api/v1/form-factors/", **params)
 
-        Args:
-            slug: Form factor URL slug (e.g. ``"id-1"``, ``"mini-sim"``, ``"nano-sim"``).
-        """
-        return self._get(f"/api/form-factor/{slug}/")
+    def get_form_factor(self, slug: str) -> dict[str, Any]:
+        """Get form factor by slug."""
+        return self._get(f"/api/v1/form-factors/" + slug + "/")
 
-    def certification(self, slug: str) -> dict[str, Any]:
-        """Get certification detail with requirements and certified products.
+    def list_glossary(self, **params: Any) -> dict[str, Any]:
+        """List all glossary."""
+        return self._get("/api/v1/glossary/", **params)
 
-        Args:
-            slug: Certification URL slug (e.g. ``"common-criteria"``, ``"fips-140"``).
-        """
-        return self._get(f"/api/certification/{slug}/")
+    def get_term(self, slug: str) -> dict[str, Any]:
+        """Get term by slug."""
+        return self._get(f"/api/v1/glossary/" + slug + "/")
 
-    def glossary_term(self, slug: str) -> dict[str, Any]:
-        """Get glossary term definition for tooltips and reference.
+    def list_guides(self, **params: Any) -> dict[str, Any]:
+        """List all guides."""
+        return self._get("/api/v1/guides/", **params)
 
-        Args:
-            slug: Term URL slug (e.g. ``"apdu"``, ``"atr"``, ``"secure-element"``).
-        """
-        return self._get(f"/api/term/{slug}/")
+    def get_guide(self, slug: str) -> dict[str, Any]:
+        """Get guide by slug."""
+        return self._get(f"/api/v1/guides/" + slug + "/")
 
-    def search(self, query: str) -> dict[str, Any]:
-        """Search across card types, platforms, standards, and glossary terms.
+    def list_manufacturers(self, **params: Any) -> dict[str, Any]:
+        """List all manufacturers."""
+        return self._get("/api/v1/manufacturers/", **params)
 
-        Args:
-            query: Search term (minimum 2 characters).
-        """
-        return self._get("/api/search/", q=query)
+    def get_manufacturer(self, slug: str) -> dict[str, Any]:
+        """Get manufacturer by slug."""
+        return self._get(f"/api/v1/manufacturers/" + slug + "/")
 
-    def compare(self, slug_a: str, slug_b: str) -> dict[str, Any]:
-        """Compare two smart card types side by side.
+    def list_personalization(self, **params: Any) -> dict[str, Any]:
+        """List all personalization."""
+        return self._get("/api/v1/personalization/", **params)
 
-        Args:
-            slug_a: First card type slug (e.g. ``"emv-contact"``).
-            slug_b: Second card type slug (e.g. ``"emv-contactless"``).
-        """
-        return self._get("/api/compare/", a=slug_a, b=slug_b)
+    def get_personalization(self, slug: str) -> dict[str, Any]:
+        """Get personalization by slug."""
+        return self._get(f"/api/v1/personalization/" + slug + "/")
 
-    def random(self) -> dict[str, Any]:
-        """Get a random smart card type with full detail."""
-        return self._get("/api/random/")
+    def list_platforms(self, **params: Any) -> dict[str, Any]:
+        """List all platforms."""
+        return self._get("/api/v1/platforms/", **params)
 
-    def openapi(self) -> dict[str, Any]:
-        """Get the OpenAPI 3.1.0 specification."""
-        return self._get("/api/openapi.json")
+    def get_platform(self, slug: str) -> dict[str, Any]:
+        """Get platform by slug."""
+        return self._get(f"/api/v1/platforms/" + slug + "/")
 
-    # -- Context manager -------------------------------------------------------
+    def list_standards(self, **params: Any) -> dict[str, Any]:
+        """List all standards."""
+        return self._get("/api/v1/standards/", **params)
+
+    def get_standard(self, slug: str) -> dict[str, Any]:
+        """Get standard by slug."""
+        return self._get(f"/api/v1/standards/" + slug + "/")
+
+    def list_tools(self, **params: Any) -> dict[str, Any]:
+        """List all tools."""
+        return self._get("/api/v1/tools/", **params)
+
+    def get_tool(self, slug: str) -> dict[str, Any]:
+        """Get tool by slug."""
+        return self._get(f"/api/v1/tools/" + slug + "/")
+
+    def search(self, query: str, **params: Any) -> dict[str, Any]:
+        """Search across all content."""
+        return self._get(f"/api/v1/search/", q=query, **params)
+
+    # -- Lifecycle -----------------------------------------------------------
 
     def close(self) -> None:
-        """Close the underlying HTTP connection."""
+        """Close the underlying HTTP client."""
         self._client.close()
 
     def __enter__(self) -> SmartCardFYI:
