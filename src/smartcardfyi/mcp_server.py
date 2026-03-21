@@ -1,144 +1,88 @@
-"""MCP server for smartcardfyi — smart card tools for AI assistants.
+"""MCP server for smartcardfyi — AI assistant tools for smartcardfyi.com.
 
-Requires the ``mcp`` extra: ``pip install smartcardfyi[mcp]``
-
-Run as a standalone server::
-
-    python -m smartcardfyi.mcp_server
-
-Or configure in ``claude_desktop_config.json``::
-
-    {
-        "mcpServers": {
-            "smartcardfyi": {
-                "command": "python",
-                "args": ["-m", "smartcardfyi.mcp_server"]
-            }
-        }
-    }
+Run: uvx --from "smartcardfyi[mcp]" python -m smartcardfyi.mcp_server
 """
-
 from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("smartcardfyi")
+mcp = FastMCP("SmartCardFYI")
 
 
 @mcp.tool()
-def smartcard_search(query: str) -> str:
-    """Search for smart card types, chip platforms, standards, and terminology on SmartCardFYI.
-
-    Search across smart card formats (EMV, SIM, PIV, CAC, FIDO2), chip platforms
-    (Java Card, MULTOS, JCOP, BasicCard), standards (ISO 7816, GlobalPlatform),
-    and glossary terms.
+def list_card_types(limit: int = 20, offset: int = 0) -> str:
+    """List card_types from smartcardfyi.com.
 
     Args:
-        query: Search term (e.g. "emv", "java card", "sim", "apdu").
+        limit: Maximum number of results. Default 20.
+        offset: Number of results to skip. Default 0.
     """
     from smartcardfyi.api import SmartCardFYI
 
     with SmartCardFYI() as api:
-        results = api.search(query)
-
-    items = results.get("results", [])
-    if not items:
-        return f"No results found for '{query}'."
-
-    lines = [
-        f"## Smart Card Search: {query}",
-        "",
-        f"Found {len(items)} result(s):",
-        "",
-        "| Type | Name | Slug |",
-        "|------|------|------|",
-    ]
-
-    for item in items:
-        t, n, s = item.get("type", ""), item.get("name", ""), item.get("slug", "")
-        lines.append(f"| {t} | {n} | {s} |")
-
-    return "\n".join(lines)
+        data = api.list_card_types(limit=limit, offset=offset)
+        results = data.get("results", data) if isinstance(data, dict) else data
+        if not results:
+            return "No card_types found."
+        items = results[:limit] if isinstance(results, list) else []
+        return "\n".join(f"- {item.get('name', item.get('slug', '?'))}" for item in items)
 
 
 @mcp.tool()
-def smartcard_lookup(slug: str) -> str:
-    """Look up a specific smart card type by slug.
-
-    Returns full specifications including interface, platform, form factor,
-    memory size, crypto support, certifications, and related standards.
+def get_card_type(slug: str) -> str:
+    """Get detailed information about a specific card_type.
 
     Args:
-        slug: Card type slug (e.g. "emv-contact", "sim-card", "piv-card", "java-card").
+        slug: URL slug identifier for the card_type.
     """
     from smartcardfyi.api import SmartCardFYI
 
     with SmartCardFYI() as api:
-        data = api.card(slug)
-
-    lines = [
-        f"## {data.get('name', slug)}",
-        "",
-        data.get("description", ""),
-        "",
-        f"- **Category**: {data.get('category', 'N/A')}",
-        f"- **Interface**: {data.get('interface', 'N/A')}",
-        f"- **Platform**: {data.get('platform', 'N/A')}",
-        f"- **Form Factor**: {data.get('form_factor', 'N/A')}",
-        f"- **Memory Size**: {data.get('memory_size', 'N/A')}",
-        f"- **Crypto Support**: {data.get('crypto_support', 'N/A')}",
-    ]
-
-    standards = data.get("standards", [])
-    if standards:
-        lines.append("")
-        lines.append("### Standards")
-        for st in standards:
-            lines.append(f"- {st.get('name', '')} ({st.get('issuing_body', '')})")
-
-    return "\n".join(lines)
+        data = api.get_card_type(slug)
+        return str(data)
 
 
 @mcp.tool()
-def smartcard_compare(slug_a: str, slug_b: str) -> str:
-    """Compare two smart card types side by side.
+def list_applications(limit: int = 20, offset: int = 0) -> str:
+    """List applications from smartcardfyi.com.
 
     Args:
-        slug_a: First card type slug (e.g. "emv-contact").
-        slug_b: Second card type slug (e.g. "emv-contactless").
+        limit: Maximum number of results. Default 20.
+        offset: Number of results to skip. Default 0.
     """
     from smartcardfyi.api import SmartCardFYI
 
     with SmartCardFYI() as api:
-        data = api.compare(slug_a, slug_b)
+        data = api.list_applications(limit=limit, offset=offset)
+        results = data.get("results", data) if isinstance(data, dict) else data
+        if not results:
+            return "No applications found."
+        items = results[:limit] if isinstance(results, list) else []
+        return "\n".join(f"- {item.get('name', item.get('slug', '?'))}" for item in items)
 
-    a = data.get("a", {})
-    b = data.get("b", {})
 
-    lines = [
-        f"## {a.get('name', slug_a)} vs {b.get('name', slug_b)}",
-        "",
-        "| Property | " + a.get("name", slug_a) + " | " + b.get("name", slug_b) + " |",
-        "|----------|"
-        + "-" * len(a.get("name", slug_a))
-        + "--|"
-        + "-" * len(b.get("name", slug_b))
-        + "--|",
-    ]
+@mcp.tool()
+def search_smartcard(query: str) -> str:
+    """Search smartcardfyi.com for smart card types, EMV applications, and certifications.
 
-    fields = [
-        ("Category", "category"),
-        ("Interface", "interface"),
-        ("Platform", "platform"),
-        ("Form Factor", "form_factor"),
-        ("Memory Size", "memory_size"),
-        ("Multi-app", "is_multi_app"),
-    ]
-    for label, key in fields:
-        lines.append(f"| {label} | {a.get(key, '-')} | {b.get(key, '-')} |")
+    Args:
+        query: Search query string.
+    """
+    from smartcardfyi.api import SmartCardFYI
 
-    return "\n".join(lines)
+    with SmartCardFYI() as api:
+        data = api.search(query)
+        results = data.get("results", data) if isinstance(data, dict) else data
+        if not results:
+            return f"No results found for \"{query}\"."
+        items = results[:10] if isinstance(results, list) else []
+        return "\n".join(f"- {item.get('name', item.get('slug', '?'))}" for item in items)
+
+
+def main() -> None:
+    """Run the MCP server."""
+    mcp.run()
 
 
 if __name__ == "__main__":
-    mcp.run()
+    main()

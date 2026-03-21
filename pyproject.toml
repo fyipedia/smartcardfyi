@@ -1,6 +1,6 @@
 [project]
 name = "smartcardfyi"
-version = "0.1.0"
+version = "0.1.1"
 description = "Smart card encyclopedia API client — look up EMV, Java Card, MULTOS, SIM, JCOP chip platforms, ISO 7816 standards, and specifications from SmartCardFYI."
 readme = "README.md"
 license = "MIT"
@@ -42,6 +42,7 @@ all = ["smartcardfyi[api,cli,mcp]"]
 
 [project.scripts]
 smartcardfyi = "smartcardfyi.cli:app"
+smartcardfyi-mcp = "smartcardfyi.mcp_server:main"
 
 [project.entry-points."mcp.servers"]
 smartcardfyi = "smartcardfyi.mcp_server:mcp"
