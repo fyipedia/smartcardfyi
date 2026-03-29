@@ -309,6 +309,17 @@ Part of the [FYIPedia](https://fyipedia.com) open-source developer tools ecosyst
 | rfidfyi | [PyPI](https://pypi.org/project/rfidfyi/) | [npm](https://www.npmjs.com/package/rfidfyi) | RFID tags, readers, frequencies -- [rfidfyi.com](https://rfidfyi.com) |
 | **smartcardfyi** | [PyPI](https://pypi.org/project/smartcardfyi/) | [npm](https://www.npmjs.com/package/smartcardfyi) | **Smart cards, EMV, platforms -- [smartcardfyi.com](https://smartcardfyi.com)** |
 
+## Embed Widget
+
+Embed [SmartCardFYI](https://smartcardfyi.com) widgets on any website with [smartcardfyi-embed](https://widget.smartcardfyi.com):
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/smartcardfyi-embed@1/dist/embed.min.js"></script>
+<div data-smartcardfyi="entity" data-slug="example"></div>
+```
+
+Zero dependencies · Shadow DOM · 4 themes (light/dark/sepia/auto) · [Widget docs](https://widget.smartcardfyi.com)
+
 ## License
 
 MIT
