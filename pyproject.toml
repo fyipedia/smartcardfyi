@@ -1,6 +1,6 @@
 [project]
 name = "smartcardfyi"
-version = "0.1.1"
+version = "0.1.2"
 description = "Smart card encyclopedia API client — look up EMV, Java Card, MULTOS, SIM, JCOP chip platforms, ISO 7816 standards, and specifications from SmartCardFYI."
 readme = "README.md"
 license = "MIT"
