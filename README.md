@@ -320,6 +320,15 @@ Embed [SmartCardFYI](https://smartcardfyi.com) widgets on any website with [smar
 
 Zero dependencies · Shadow DOM · 4 themes (light/dark/sepia/auto) · [Widget docs](https://widget.smartcardfyi.com)
 
+## Recently Updated (v0.1.2)
+
+Latest content state on [https://smartcardfyi.com](https://smartcardfyi.com):
+- [Homepage](https://smartcardfyi.com)
+- [Developer documentation](https://smartcardfyi.com/developers/)
+- [Sitemap (full content index)](https://smartcardfyi.com/sitemap.xml)
+
+Version bumped 2026-05-27 as part of the FYIPedia [SEO recovery refresh](https://github.com/dobestan).
+
 ## License
 
 MIT
