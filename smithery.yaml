@@ -1,0 +1,10 @@
+# Smithery configuration for smartcardfyi
+# https://smithery.ai/docs/build/project-config
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required: []
+    properties: {}
+  commandFunction: |-
+    config => ({ command: 'uvx', args: ['--from', 'smartcardfyi[mcp]', 'python', '-m', 'smartcardfyi.mcp_server'] })
